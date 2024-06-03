@@ -1,0 +1,39 @@
+@keyframes fading-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+        clip-path: inset(45% 20% 45% 20%);
+    }
+
+    to {
+        opacity: 1;
+        clip-path: inset(0% 0% 0% 0%);
+    }
+}
+
+.revealing-image {
+    animation: reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 25% cover 30%;
+}
+
+.hero-animation {
+    animation: fading-in 0.8s ease-out forwards;
+}
+
+.fading-in {
+    animation: fading-in linear both;
+    animation-timeline: view();
+    animation-range: entry 20% cover 30%;
+}
