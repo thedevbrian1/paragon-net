@@ -1,4 +1,4 @@
-import { Link, json, useLoaderData } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
 import { Table } from '~/components/Table';
 import { TableData } from '~/components/TableData';
 import { TableHead } from '~/components/TableHead';
