@@ -1,7 +1,6 @@
 import { Link, useLoaderData } from '@remix-run/react';
 import { PlusIcon } from '../components/Icon';
 import { getCourseById } from '../models/course';
-import { json } from '@remix-run/node';
 import { createClient } from '../.server/supabase';
 import { getPersonalEnrolments } from '~/models/enrolment';
 

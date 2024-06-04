@@ -4,7 +4,6 @@ import {
 	isRouteErrorResponse,
 	useRouteError,
 } from '@remix-run/react';
-import { json } from '@remix-run/node';
 import { requireUser } from '../.server/supabase';
 import {
 	BookOpenIcon,

@@ -1,5 +1,5 @@
-import { Form, Link, json, redirect, useActionData, useFetcher, useLoaderData, useNavigation } from "@remix-run/react";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { Form, Link, useActionData, useFetcher, useLoaderData, useNavigation } from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
 import FormSpacer from "~/components/FormSpacer";
 import { Grid } from "~/components/Grid";
 import { ArrowLeftIcon, PlusIcon, XIcon } from "~/components/Icon";
@@ -17,6 +17,7 @@ import { getSession, sessionStorage, setSuccessMessage } from "~/.server/session
 import { useDoubleCheck } from "~/utils";
 import { badRequest, trimValue, validateName, validatePhone } from "~/.server/validation";
 import { updateLocation } from "~/models/location";
+import { TriangleAlert } from "lucide-react";
 
 export const meta = ({ data }) => {
     return [
@@ -226,8 +227,6 @@ export async function action({ request, params, response }) {
 export default function Student() {
     const { student, courses, allCourses, counties, subCounties } = useLoaderData();
 
-    console.log({ student });
-
     const actionData = useActionData();
     const navigation = useNavigation();
 
@@ -239,27 +238,30 @@ export default function Student() {
     const doubleCheckDelete = useDoubleCheck();
 
     let newCourseRef = useRef(null);
-    let firstNameRef = useRef(null);
-    let lastNameRef = useRef(null);
-    let phoneRef = useRef(null);
-    let countyRef = useRef(null);
-    let subcountyRef = useRef(null);
 
-    let [hasChanged, setHasChanged] = useState(false);
+    let [firstName, setFirstName] = useState(student[0].first_name);
+    let [lastName, setLastName] = useState(student[0].last_name);
+    let [phone, setPhone] = useState(student[0].phone);
+    let [county, setCounty] = useState(student[0].locations?.subcounties?.counties?.title);
+    let [subcounty, setSubcounty] = useState(student[0].locations?.subcounties?.title);
 
-    console.log({ hasChanged });
-    // function handleChange(event,value) {
-    //     if (event)
-    // }
-    const [selectedCounty, setSelectedCounty] = useState(student[0].locations?.subcounties.counties.title);
-
+    // FIXME: Show a default subcounty when one changes counties
 
     let matchedSubCounties;
 
-    if (selectedCounty) {
-        let countyId = counties.find(county => county.title === selectedCounty).id;
-        matchedSubCounties = subCounties.filter((subCounty) => subCounty.county_id === countyId);
-    }
+    let countyId = counties.find(item => item.title === county)?.id;
+    matchedSubCounties = subCounties.filter((subCounty) => subCounty.county_id === countyId);
+
+    // TODO: Show if there are unsaved changes
+
+    // If any of the values from the db do not match the input values show unsaved changes
+
+    let hasChanged = !(firstName.toLowerCase() === student[0].first_name.toLowerCase()
+        && lastName.toLowerCase() === student[0].last_name.toLowerCase()
+        && phone === student[0].phone
+        && county === student[0].locations?.subcounties?.counties?.title
+        && subcounty === student[0].locations?.subcounties?.title
+    );
 
     useEffect(() => {
         if (isEnrollingNewCourse) {
@@ -267,22 +269,18 @@ export default function Student() {
         }
     }, [isEnrollingNewCourse]);
 
-    // TODO: Show if there are unsaved changes
-
-    // FIXME: Disable button does not work correctly
-    useEffect(() => {
-        if ((firstNameRef.current?.value?.toLowerCase() === student[0].first_name.toLowerCase())
-            && (lastNameRef.current?.value?.toLowerCase() === student[0].last_name.toLowerCase())
-            && (phoneRef.current?.value === student[0].phone)
-            && (countyRef.current?.value?.toLowerCase() === student[0].locations?.subcounties?.counties?.title.toLowerCase())
-            && (subcountyRef.current?.value?.toLowerCase() === student[0].locations?.subcounties?.title.toLowerCase())
-        ) {
-            setHasChanged(false);
-        }
-    }, [hasChanged]);
-
     return (
-        <div className="mt-8 lg:mt-12 max-w-4xl">
+        <div className="pt-12 max-w-4xl relative">
+            {hasChanged
+
+                ? <div className="fixed top-[85px] md:top-[105px] lg:top-[117px] left-14 lg:left-72 right-0 transition ease-in-out duration-300 bg-brand-black h-10 flex items-center justify-center">
+                    <p className="text-white flex gap-4 justify-center">
+                        <TriangleAlert /> Unsaved changes
+                    </p>
+                </div>
+                : null
+            }
+
             <Link
                 to="/admin/students"
                 className="flex gap-2 items-center hover:text-brand-orange transition ease-in-out duration-300"><ArrowLeftIcon /> Back to students</Link>
@@ -295,17 +293,11 @@ export default function Student() {
                         <FormSpacer>
                             <Label htmlFor="firstName">First Name</Label>
                             <Input
-                                ref={firstNameRef}
                                 type='text'
                                 name='firstName'
                                 id='firstName'
                                 defaultValue={student[0].first_name}
-                                onChange={() => {
-                                    console.log(firstNameRef.current.value);
-                                    if (firstNameRef.current.value.toLowerCase() !== student[0].first_name) {
-                                        setHasChanged(true);
-                                    }
-                                }}
+                                onChange={(event) => setFirstName(event.target.value)}
                                 className={`focus-visible:ring-brand-blue capitalize transition duration-300 ease-in-out ${actionData?.fieldErrors?.firstName ? 'border border-red-500' : ''}`}
                             />
                             {actionData?.fieldErrors?.firstName
@@ -316,16 +308,11 @@ export default function Student() {
                         <FormSpacer>
                             <Label htmlFor='lastName'>Last Name</Label>
                             <Input
-                                ref={lastNameRef}
                                 type='text'
                                 name='lastName'
                                 id='lastName'
                                 defaultValue={student[0].last_name}
-                                onChange={() => {
-                                    if (lastNameRef.current.value.toLowerCase() !== student[0].last_name) {
-                                        setHasChanged(true);
-                                    }
-                                }}
+                                onChange={(event) => setLastName(event.target.value)}
                                 className={`focus-visible:ring-brand-blue capitalize transition duration-300 ease-in-out ${actionData?.fieldErrors?.lastName ? 'border border-red-500' : ''}`}
                             />
                             {actionData?.fieldErrors?.lastName
@@ -336,16 +323,11 @@ export default function Student() {
                         <FormSpacer>
                             <Label htmlFor='phone'>Phone</Label>
                             <Input
-                                ref={phoneRef}
                                 type='text'
                                 name='phone'
                                 id='phone'
                                 defaultValue={student[0].phone}
-                                onChange={() => {
-                                    if (phoneRef.current.value.toLowerCase() !== student[0].phone) {
-                                        setHasChanged(true);
-                                    }
-                                }}
+                                onChange={(event) => setPhone(event.target.value)}
                                 className={`focus-visible:ring-brand-blue transition duration-300 ease-in-out ${actionData?.fieldErrors?.phone ? 'border border-red-500' : ''}`}
                             />
                             {actionData?.fieldErrors?.phone
@@ -359,10 +341,9 @@ export default function Student() {
                             <FormSpacer>
                                 <Label htmlFor="county">County</Label>
                                 <Select
-                                    ref={countyRef}
                                     name="county"
                                     id='county'
-                                    onValueChange={(value) => setSelectedCounty(value)}
+                                    onValueChange={(value) => setCounty(value)}
                                     defaultValue={student[0].locations?.subcounties?.counties?.title}
                                     required
                                 >
@@ -385,9 +366,9 @@ export default function Student() {
                             <FormSpacer>
                                 <Label htmlFor="subcounty">Sub-county</Label>
                                 <Select
-                                    ref={subcountyRef}
                                     name="subcounty"
                                     id='subcounty'
+                                    onValueChange={(value) => setSubcounty(value)}
                                     defaultValue={student[0].locations?.subcounties?.title}
                                     required
                                 >
@@ -412,7 +393,6 @@ export default function Student() {
                     <div className="flex justify-end mt-4">
                         <Button
                             disabled={(isSubmitting && navigation.formData.get('_action') === 'save') || !hasChanged}
-                            // disabled={!hasChanged}
                             type='submit'
                             name='_action'
                             value='save'
@@ -511,33 +491,6 @@ export default function Student() {
     );
 }
 
-// let CustomSelect = forwardRef(({}) => {
-//     return (
-//         <Select
-//                                     ref={countyRef}
-//                                     name="county"
-//                                     id='county'
-//                                     onValueChange={(value) => setSelectedCounty(value)}
-//                                     defaultValue={student[0].locations?.subcounties?.counties?.title}
-//                                     required
-//                                 >
-//                                     <SelectTrigger className="w-[180px]">
-//                                         <SelectValue placeholder="--Select county--" />
-//                                     </SelectTrigger>
-//                                     <SelectContent>
-//                                         {counties.map((county) => (
-//                                             <SelectItem
-//                                                 // key={county.id}
-//                                                 key={crypto.randomUUID()}
-//                                                 value={county.title}
-//                                             >
-//                                                 {county.title}
-//                                             </SelectItem>
-//                                         ))}
-//                                     </SelectContent>
-//                                 </Select>
-//     )
-// })
 function EnroledCourse({ title, imageSrc, enrolmentId }) {
     const fetcher = useFetcher();
     const doubleCheckDelete = useDoubleCheck();

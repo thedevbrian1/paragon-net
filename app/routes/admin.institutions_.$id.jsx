@@ -31,11 +31,12 @@ import {
 	setSuccessMessage,
 } from '~/.server/session';
 import { badRequest, validateName } from '~/.server/validation';
+import { TriangleAlert } from 'lucide-react';
 
 export async function loader({ request, params, response }) {
-	const institutionId = Number(params.id);
+	let institutionId = Number(params.id);
 
-	const [
+	let [
 		{ data: institution, headers: institutionHeaders },
 		{ data: countries, headers: countryHeaders },
 		{ data: counties, headers: countyHeaders },
@@ -47,7 +48,7 @@ export async function loader({ request, params, response }) {
 		getSubCounties(request),
 	]);
 
-	const allHeaders = {
+	let allHeaders = {
 		...Object.fromEntries(institutionHeaders.entries()),
 		...Object.fromEntries(countryHeaders.entries()),
 		...Object.fromEntries(countyHeaders.entries()),
@@ -62,15 +63,15 @@ export async function loader({ request, params, response }) {
 }
 
 export async function action({ request, params, response }) {
-	const institutionId = Number(params.id);
+	let institutionId = Number(params.id);
 
-	const session = await getSession(request);
+	let session = await getSession(request);
 
-	const formData = await request.formData();
-	const name = String(formData.get('name'));
-	const subCounty = String(formData.get('subcounty'));
+	let formData = await request.formData();
+	let name = String(formData.get('name'));
+	let subCounty = String(formData.get('subcounty'));
 
-	const fieldErrors = {
+	let fieldErrors = {
 		name: validateName(name),
 	};
 
@@ -80,7 +81,7 @@ export async function action({ request, params, response }) {
 
 	// TODO: Update location
 
-	const { status, headers } = await updateInstitution(
+	let { status, headers } = await updateInstitution(
 		request,
 		institutionId,
 		name,
@@ -88,7 +89,7 @@ export async function action({ request, params, response }) {
 
 	if (status === 204) {
 		setSuccessMessage(session, 'Updated successfully.');
-		// const allHeaders = {
+		// let allHeaders = {
 		//     ...Object.fromEntries(headers.entries()),
 		//     "Set-Cookie": await sessionStorage.commitSession(session)
 		// };
@@ -107,42 +108,55 @@ export async function action({ request, params, response }) {
 }
 
 export default function Institution() {
-	const { institution, countries, counties, subCounties } = useLoaderData();
-	const actionData = useActionData();
-	const navigation = useNavigation();
+	let { institution, countries, counties, subCounties } = useLoaderData();
+	let actionData = useActionData();
+	let navigation = useNavigation();
 
-	const isSubmitting = navigation.state === 'submitting';
+	let isSubmitting = navigation.state === 'submitting';
 
-	const [selectedCountry, setSelectedCountry] = useState(
-		institution[0].locations.subcounties.counties.countries.title,
-	);
-	const [selectedCounty, setSelectedCounty] = useState(
-		institution[0].locations.subcounties.counties.title,
-	);
-
+	let [country, setCountry] = useState(institution[0].locations.subcounties.counties.countries.title);
+	let [county, setCounty] = useState(institution[0].locations.subcounties.counties.title);
+	let [subcounty, setSubCounty] = useState(institution[0].locations.subcounties.title);
 	let matchedCounties;
+	let [name, setName] = useState(institution[0].title);
 
-	if (selectedCountry) {
+	if (country) {
 		let countryId = countries.find(
-			(country) => country.title === selectedCountry,
+			(item) => item.title === country,
 		).id;
 		matchedCounties = counties.filter(
-			(county) => county.country_id === countryId,
+			(item) => item.country_id === countryId,
 		);
 	}
 
 	let matchedSubCounties;
 
-	if (selectedCounty) {
+	if (county) {
 		let countyId = counties.find(
-			(county) => county.title === selectedCounty,
+			(item) => item.title === county,
 		).id;
 		matchedSubCounties = subCounties.filter(
-			(subCounty) => subCounty.county_id === countyId,
+			(item) => item.county_id === countyId,
 		);
 	}
+
+	let hasChanged = !(name.toLowerCase() === institution[0].title.toLowerCase()
+		&& country === institution[0].locations.subcounties.counties.countries.title
+		&& county === institution[0].locations.subcounties.counties.title
+		&& subcounty === institution[0].locations.subcounties.title
+	);
+
 	return (
-		<div className="mt-8 lg:mt-12 max-w-4xl text-brand-black">
+		<div className="pt-12 max-w-4xl text-brand-black relative">
+			{hasChanged
+
+				? <div className="fixed top-[85px] md:top-[105px] lg:top-[117px] left-14 lg:left-72 right-0 transition ease-in-out duration-300 bg-brand-black h-10 flex items-center justify-center">
+					<p className="text-white flex gap-4 justify-center">
+						<TriangleAlert /> Unsaved changes
+					</p>
+				</div>
+				: null
+			}
 			<h2 className="font-semibold text-lg">Institution details</h2>
 			<p className="text-orange-500 bg-orange-100 border-l-2 border-l-orange-500 mt-4 p-4 text-sm font-bold">
 				You can edit the institution info from here
@@ -156,6 +170,7 @@ export default function Institution() {
 							name="name"
 							defaultValue={institution[0].title}
 							placeholder="Tassia School"
+							onChange={(event) => setName(event.target.value)}
 							className={`focus-visible:ring-brand-blue transition duration-300 ease-in-out ${actionData?.fieldErrors?.name ? 'border border-red-500' : ''}`}
 						/>
 						{actionData?.fieldErrors?.name ? (
@@ -178,10 +193,9 @@ export default function Institution() {
 										.counties.countries.title
 								}
 								onValueChange={(value) =>
-									setSelectedCountry(value)
+									setCountry(value)
 								}
-								// required
-								disabled
+							// required
 							>
 								<SelectTrigger className="w-[180px] focus-visible:ring-brand-blue transition duration-300 ease-in-out">
 									<SelectValue placeholder="--Select country--" />
@@ -199,7 +213,7 @@ export default function Institution() {
 								</SelectContent>
 							</Select>
 						</FormSpacer>
-						{selectedCountry ? (
+						{country ? (
 							<FormSpacer>
 								<Label htmlFor="county">County</Label>
 								<Select
@@ -211,10 +225,9 @@ export default function Institution() {
 											.counties.title
 									}
 									onValueChange={(value) =>
-										setSelectedCounty(value)
+										setCounty(value)
 									}
 									required
-									disabled
 								>
 									<SelectTrigger className="w-[180px] focus-visible:ring-brand-blue transition duration-300 ease-in-out">
 										<SelectValue placeholder="--Select county--" />
@@ -233,7 +246,7 @@ export default function Institution() {
 								</Select>
 							</FormSpacer>
 						) : null}
-						{selectedCounty ? (
+						{county ? (
 							<FormSpacer>
 								<Label htmlFor="subcounty">Sub-county</Label>
 								<Select
@@ -243,8 +256,8 @@ export default function Institution() {
 										institution[0].locations.subcounties
 											.title
 									}
+									onValueChange={(value) => setSubCounty(value)}
 									required
-									disabled
 								>
 									<SelectTrigger className="w-[180px] focus-visible:ring-brand-blue transition duration-300 ease-in-out">
 										<SelectValue placeholder="--Select sub-county--" />
@@ -268,7 +281,7 @@ export default function Institution() {
 				<div className="mt-8 flex justify-end">
 					<Button
 						type="submit"
-						disabled={isSubmitting}
+						disabled={isSubmitting || !hasChanged}
 						className="bg-brand-orange hover:bg-orange-300 transition duration-300 ease-in-out focus-visible:ring-brand-blue text-brand-black"
 					>
 						{isSubmitting ? 'Saving...' : 'Save'}
@@ -280,7 +293,7 @@ export default function Institution() {
 }
 
 export function ErrorBoundary() {
-	const error = useRouteError();
+	let error = useRouteError();
 
 	if (isRouteErrorResponse(error)) {
 		console.log({ error });
