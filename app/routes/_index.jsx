@@ -215,7 +215,7 @@ function CoursesIntro() {
 					<Computer />
 				</div>
 			</div>
-			<div className="px-4 md:px-0 opacity-0 fading-in">
+			<div className="px-4 md:px-0">
 				<h3 className="font-semibold text-lg mt-8">
 					Explore our programs
 				</h3>
@@ -255,7 +255,7 @@ function CoursesIntro() {
 
 function CourseCard({ title, bgImg, children }) {
 	return (
-		<div className="bg-gray-100 border border-slate-300  hover:shadow-slate-200 rounded overflow-hidden hover:shadow-lg transition ease-in-out suration-300">
+		<div className="opacity-0 fading-in bg-gray-100 border border-slate-300  hover:shadow-slate-200 rounded overflow-hidden hover:shadow-lg transition ease-in-out suration-300">
 			<div>
 				<img src={bgImg} alt="" className="h-48 w-full object-cover" />
 			</div>

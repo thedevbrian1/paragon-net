@@ -55,12 +55,13 @@ export async function action({ request, response }) {
 
     if (signinUser.user.email === process.env.ADMIN_EMAIL || signinUser.user.email === process.env.ADMIN_EMAIL_2) {
         response.headers.set('Location', '/admin');
-        throw response;
+        // throw response;
+        return response;
     }
     response.status = 302;
     response.headers.set('Location', '/dashboard');
     response.headers.set('Location', '/dashboard');
-    throw response;
+    // throw response;
     return response;
 }
 

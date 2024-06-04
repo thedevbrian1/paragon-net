@@ -46,7 +46,7 @@ function LowerPrimaryCourses() {
     }
 
     return (
-        <section className="px-4 md:px-0 opacity-0 fading-in" id="lowerPrimary">
+        <section className="px-4 md:px-0" id="lowerPrimary">
             <h2 className="font-semibold text-lg mt-8">Lower primary courses</h2>
             <CardContainer>
                 {lowerPrimaryCourses.map((course) => {
@@ -91,7 +91,7 @@ function UpperPrimaryCourses() {
     }
 
     return (
-        <section className="opacity-0 fading-in px-4 md:px-0" id="upperPrimary">
+        <section className="px-4 md:px-0" id="upperPrimary">
             <h2 className="font-semibold text-lg mt-8">Upper primary courses</h2>
             <CardContainer>
                 {upperPrimaryCourses.map((course, index) => {
@@ -136,7 +136,7 @@ function JuniorHighSchoolCourses() {
     }
 
     return (
-        <section className="opacity-0 fading-in px-4 md:px-0" id="juniorHigh">
+        <section className="px-4 md:px-0" id="juniorHigh">
             <h2 className="font-semibold text-lg mt-8">Junior high school courses</h2>
             <CardContainer>
                 {juniorHighSchoolCourses.map((course, index) => {
@@ -181,7 +181,7 @@ function SeniorHighSchoolCourses() {
     }
 
     return (
-        <section className="opacity-0 fading-in px-4 md:px-0" id="seniorHigh">
+        <section className="px-4 md:px-0" id="seniorHigh">
             <h2 className="font-semibold text-lg mt-8">Senior high school courses</h2>
             <CardContainer>
                 {seniorHighSchoolCourses.map((course, index) => {
@@ -220,7 +220,7 @@ function PostHighSchoolCourses() {
     }
 
     return (
-        <section className="opacity-0 fading-in px-4 md:px-0" id="seniorHigh">
+        <section className="px-4 md:px-0" id="seniorHigh">
             <h2 className="font-semibold text-lg mt-8">Post high school courses</h2>
             <CardContainer>
                 {postHighSchoolCourses.map((course, index) => {
@@ -259,7 +259,7 @@ function HolidayCourses() {
     }
 
     return (
-        <section className="opacity-0 fading-in px-4 md:px-0" id="seniorHigh">
+        <section className="px-4 md:px-0" id="seniorHigh">
             <h2 className="font-semibold text-lg mt-8">Weekend & holiday courses</h2>
             <CardContainer>
                 {holidayCourses.map((course, index) => {

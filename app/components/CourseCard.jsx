@@ -1,6 +1,6 @@
 export default function CourseCard({ title, bgImg, description }) {
     return (
-        <div className="bg-gray-100 border border-slate-300 rounded overflow-hidden hover:shadow-lg transition ease-in-out duration-300">
+        <div className="opacity-0 fading-in bg-gray-100 border border-slate-300 rounded overflow-hidden hover:shadow-lg transition ease-in-out duration-300">
             <div>
                 <img src={bgImg} alt="" className="h-36 lg:h-48 w-full object-cover object-top" />
             </div>
