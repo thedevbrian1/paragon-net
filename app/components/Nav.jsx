@@ -1,10 +1,12 @@
-import { Link, NavLink } from "@remix-run/react";
+import { Link, NavLink, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { HamburgerIcon, XIcon } from "./Icon";
 import { navLinks } from "../utils";
 
 export default function Nav({ isLoggedIn }) {
+    let { isAdmin } = useLoaderData();
+
     const [isMenuShowing, setIsMenuShowing] = useState(false);
     function toggleMenu() {
         setIsMenuShowing(!isMenuShowing);
@@ -47,7 +49,13 @@ export default function Nav({ isLoggedIn }) {
                 </ul>
                 {
                     isLoggedIn
-                        ? null
+                        ? <Link
+                            to={`${isAdmin ? '/admin' : '/dashboard'}`}
+                            prefetch="intent"
+                            className="bg-brand-orange hover:bg-orange-400 transition duration-300 ease-in-out text-black px-5 py-3 rounded"
+                        >
+                            Dashboard
+                        </Link>
                         : (
                             <div className="flex gap-4 items-center">
                                 <Link to="/login" className="underline">

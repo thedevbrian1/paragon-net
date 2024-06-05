@@ -134,6 +134,9 @@ export default function NewStudent() {
 
     const [isShowingPassword, setIsShowingPassword] = useState(false);
 
+    // TODO: Separate enrol student from sign up student
+    // Select a student to enrol from the available students. If the student is not present, sign them up first then enrol a course
+
     return (
         <div className="mt-8 lg:mt-12 max-w-4xl">
             <h2 className="font-semibold text-lg">Enrol student</h2>

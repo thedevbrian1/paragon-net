@@ -49,7 +49,7 @@ export async function getInstitutionById(request, id) {
     const { supabaseClient, headers } = createClient(request);
     const { data, error } = await supabaseClient
         .from('institutions')
-        .select('title, locations(subcounties(title, counties(title, countries(title))))')
+        .select('title, location_id, locations(subcounties(title, counties(title, countries(title))))')
         .eq('id', Number(id));
 
     if (error) {

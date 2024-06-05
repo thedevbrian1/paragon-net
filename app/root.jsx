@@ -13,7 +13,6 @@ import {
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
 import { useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -26,6 +25,7 @@ import Input from "./components/Input";
 import { createClient } from "./.server/supabase";
 import { honeypot } from "~/.server/honeypot";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
+import { useSpinDelay } from 'spin-delay';
 // import { Search } from "./routes/search";
 import { getSession, sessionStorage } from "./.server/session";
 import Nav from "./components/Nav";
@@ -65,10 +65,10 @@ export async function loader({ request, response }) {
   response.headers.set("Set-Cookie", await sessionStorage.commitSession(session));
 
   if (!toastMessage) {
-    return json({ user: user?.id, username, toastMessage: null, honeypotInputProps: honeypot.getInputProps(), isAdmin });
+    return { user: user?.id, username, toastMessage: null, honeypotInputProps: honeypot.getInputProps(), isAdmin };
   }
 
-  return json({ user: user?.id, username, toastMessage, honeypotInputProps: honeypot.getInputProps(), isAdmin });
+  return { user: user?.id, username, toastMessage, honeypotInputProps: honeypot.getInputProps(), isAdmin };
 }
 
 export function Layout({ children }) {
@@ -82,7 +82,10 @@ export function Layout({ children }) {
 
   let isFromCourseDetail = location.pathname.includes('/category') && navigation?.location?.pathname === '/courses';
 
-  let showLoadingState = isLoading && !hasCategory && !isFromCourseDetail;
+  let showLoadingState = useSpinDelay(isLoading && !hasCategory && !isFromCourseDetail, {
+    delay: 150,
+    minDuration: 500
+  });
 
   const isLoggedIn = user ? true : false;
 
@@ -90,12 +93,15 @@ export function Layout({ children }) {
   const apiKey = "8601346d113a7a8af3eb890f76f5c193";
   // const searchClient = algoliasearch(appId, apiKey);
 
-  const toastId = useRef(null);
+  let toastId = useRef(null);
 
   useEffect(() => {
     if (!toastMessage) {
       return;
     }
+
+    console.log({ toastMessage });
+
     const { message, type } = toastMessage;
 
     switch (type) {

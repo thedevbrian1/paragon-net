@@ -240,7 +240,7 @@ export async function action({ request, response }) {
     }
     response.status = 302;
     response.headers.set('Location', `?page=${nextPage}`);
-    response.headers.set("Set-Cookie", await sessionStorage.commitSession(session));
+    response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
     return response;
 }
 

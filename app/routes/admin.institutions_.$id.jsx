@@ -24,7 +24,7 @@ import {
 import { getCountries } from '~/models/country';
 import { getCounties } from '~/models/county';
 import { getInstitutionById, updateInstitution } from '~/models/institution';
-import { getSubCounties } from '~/models/subcounty';
+import { getSubCounties, getSubCountyByTitle } from '~/models/subcounty';
 import {
 	getSession,
 	sessionStorage,
@@ -32,6 +32,7 @@ import {
 } from '~/.server/session';
 import { badRequest, validateName } from '~/.server/validation';
 import { TriangleAlert } from 'lucide-react';
+import { updateLocation } from '~/models/location';
 
 export async function loader({ request, params, response }) {
 	let institutionId = Number(params.id);
@@ -69,7 +70,7 @@ export async function action({ request, params, response }) {
 
 	let formData = await request.formData();
 	let name = String(formData.get('name'));
-	let subCounty = String(formData.get('subcounty'));
+	let subcounty = String(formData.get('subcounty'));
 
 	let fieldErrors = {
 		name: validateName(name),
@@ -79,31 +80,46 @@ export async function action({ request, params, response }) {
 		return badRequest({ fieldErrors });
 	}
 
-	// TODO: Update location
+	let { data: institution } = await getInstitutionById(request, institutionId);
 
+	// Update insitution name
 	let { status, headers } = await updateInstitution(
 		request,
 		institutionId,
 		name,
 	);
 
+	// Update location values if they have changed
+	if ((institution[0].locations?.subcounties?.title.toLowerCase() !== subcounty.toLowerCase())) {
+		let { data } = await getSubCountyByTitle(request, subcounty);
+
+		let subcountyId = data[0].id;
+		let locationId = institution[0].location_id;
+
+		let { status } = await updateLocation(request, locationId, subcountyId);
+
+		if (status === 200) {
+			setSuccessMessage(session, "Updated successfully!");
+			response.headers.set("Set-Cookie", await sessionStorage.commitSession(session));
+
+			return { ok: true };
+		}
+	}
+
 	if (status === 204) {
 		setSuccessMessage(session, 'Updated successfully.');
-		// let allHeaders = {
-		//     ...Object.fromEntries(headers.entries()),
-		//     "Set-Cookie": await sessionStorage.commitSession(session)
-		// };
 
 		for (let [key, value] of headers.entries()) {
 			response.headers.append(key, value);
 		}
-		response.headers.append(
+		response.headers.set(
 			'Set-Cookie',
 			await sessionStorage.commitSession(session),
 		);
 
 		return { ok: true };
 	}
+
 	return null;
 }
 
@@ -195,6 +211,7 @@ export default function Institution() {
 								onValueChange={(value) =>
 									setCountry(value)
 								}
+								disabled
 							// required
 							>
 								<SelectTrigger className="w-[180px] focus-visible:ring-brand-blue transition duration-300 ease-in-out">

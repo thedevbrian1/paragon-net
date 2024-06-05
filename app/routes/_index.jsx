@@ -47,7 +47,6 @@ export const meta = () => {
 
 export async function loader() {
 	let categories = await getCategories();
-	console.log({ categories });
 	// FIXME: Holiday courses not showing
 	// const holidayCourses = await getHolidayCourses();
 	// console.log({ holidayCourses });

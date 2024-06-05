@@ -60,7 +60,6 @@ export async function action({ request, response }) {
     }
     response.status = 302;
     response.headers.set('Location', '/dashboard');
-    response.headers.set('Location', '/dashboard');
     // throw response;
     return response;
 }

@@ -252,8 +252,6 @@ export default function Student() {
     let countyId = counties.find(item => item.title === county)?.id;
     matchedSubCounties = subCounties.filter((subCounty) => subCounty.county_id === countyId);
 
-    // TODO: Show if there are unsaved changes
-
     // If any of the values from the db do not match the input values show unsaved changes
 
     let hasChanged = !(firstName.toLowerCase() === student[0].first_name.toLowerCase()
