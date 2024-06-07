@@ -173,9 +173,9 @@ export async function action({ request, response }) {
                 const { data: signupUser, error: signupError } = await supabaseClient.auth.signUp({
                     email,
                     password,
-                    options: {
-                        emailRedirectTo: getRedirectURL()
-                    }
+                    // options: {
+                    //     emailRedirectTo: getRedirectURL()
+                    // }
                 });
 
                 if (signupError) {
