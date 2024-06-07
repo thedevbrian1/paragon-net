@@ -234,6 +234,10 @@ export async function action({ request, response }) {
                 response.headers.set('Location', '/signup/individual');
                 response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
 
+                for (let [key, value] of headers) {
+                    response.headers.append(key, value);
+                }
+
                 return response;
             }
             break;
