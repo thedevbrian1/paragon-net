@@ -1,5 +1,4 @@
 import { Form, Link, isRouteErrorResponse, useActionData, useLoaderData, useNavigation, useRouteError } from "@remix-run/react";
-import { json, redirect } from "@remix-run/node";
 import { ErrorIllustration, GoogleIcon, SignupIllustration } from "../components/Icon";
 import Input from "../components/Input";
 import { badRequest, trimString, trimValue, validateEmail, validateName, validatePassword, validatePhone } from "../.server/validation";
@@ -42,14 +41,12 @@ export async function loader({ request }) {
         data = session.get(`form-data-page-${page}`) || {};
     }
 
-    const allHeaders = {
-        ...Object.fromEntries(gradeHeaders.entries()),
-        ...Object.fromEntries(countyHeaders.entries()),
-        ...Object.fromEntries(subCountyHeaders.entries())
-    };
-    return json({ page, data, grades, counties, subCounties }, {
-        headers: allHeaders
-    });
+    // const allHeaders = {
+    //     ...Object.fromEntries(gradeHeaders.entries()),
+    //     ...Object.fromEntries(countyHeaders.entries()),
+    //     ...Object.fromEntries(subCountyHeaders.entries())
+    // };
+    return { page, data, grades, counties, subCounties };
 }
 
 export async function action({ request, response }) {
@@ -210,9 +207,6 @@ export async function action({ request, response }) {
 
                 const gradeId = gradeRes[0].id;
                 const subCountyId = subCounty[0].id;
-                response.status = 302;
-                response.headers.set('Location', '/signup/individual');
-                response.headers.set("Set-Cookie", await sessionStorage.commitSession(session));
 
                 // Create student record in db
 
@@ -222,18 +216,25 @@ export async function action({ request, response }) {
                     // Clear form session values
                     session.unset('form-data-page-1');
                     session.unset('form-data-page-2');
+                    session.unset('form-data-page-3');
+                    session.unset('form-data-page-4');
+                    session.unset('form-data-page-5');
 
                     // Show successful signup toast
                     setSuccessMessage(session, 'Check your email to verify it.');
                 }
-                const allHeaders = {
-                    ...headers,
-                    ...Object.fromEntries(subCountyHeaders.entries()),
-                    ...Object.fromEntries(gradeHeaders.entries()),
-                    "Set-Cookie": await sessionStorage.commitSession(session)
-                }
-                return response;
+                // const allHeaders = {
+                //     ...headers,
+                //     ...Object.fromEntries(subCountyHeaders.entries()),
+                //     ...Object.fromEntries(gradeHeaders.entries()),
+                //     "Set-Cookie": await sessionStorage.commitSession(session)
+                // }
 
+                response.status = 302;
+                response.headers.set('Location', '/signup/individual');
+                response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
+
+                return response;
             }
             break;
         }
@@ -284,7 +285,7 @@ export default function IndividualSignup() {
             <div className="order-2 md:order-1 mt-4 md:mt-0 flex-1 basis-0 w-48 lg:w-full">
                 <SignupIllustration />
             </div>
-            <div className="order-1 md:order-2 flex-1 basis-0 w-full md:w-auto landscape:max-w-sm space-y-6">
+            <div className="order-1 md:order-2 flex-1 basis-0 w-full md:w-auto landscape:max-w-sm space-y-6 border border-gray-300 p-6 rounded-md">
                 <Form method="post" ref={formRef} preventScrollReset>
                     <HoneypotInputs />
                     <h1 className="font-semibold text-3xl">Signup</h1>
@@ -547,21 +548,22 @@ export default function IndividualSignup() {
                     }
 
                 </Form>
-                <div className="relative">
+                {/* <div className="relative">
                     <div className="before:flex-1 before:h-0.5 before:mt-0.5 before:mr-3 before:bg-slate-200 flex justify-center items-center after:flex-1 after:h-0.5 after:bg-slate-200 after:mt-0.5 after:ml-3">
                         <p className="">or</p>
                     </div>
-                </div>
+                </div> */}
 
-                <div className="flex justify-center border border-slate-300 rounded py-3">
+                {/* TODO: Google auth */}
+
+                {/* <div className="flex justify-center border border-slate-300 rounded py-3">
                     <div className="flex gap-2 items-center">
                         <div className="w-5 h-5 text-[#8e8f92]">
                             <GoogleIcon />
                         </div>
-                        {/* TODO: Google auth */}
                         Sign up with Google
                     </div>
-                </div>
+                </div> */}
                 <div>
                     <Link
                         to="/login"

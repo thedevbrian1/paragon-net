@@ -75,7 +75,7 @@ export default function Login() {
             <div className="order-2 md:order-1 mt-4 md:mt-0 flex-1 basis-0 w-48 lg:w-full">
                 <SignupIllustration />
             </div>
-            <div className="order-1 md:order-2 flex-1 basis-0 w-full md:w-auto landscape:max-w-sm space-y-6">
+            <div className="order-1 md:order-2 flex-1 basis-0 w-full md:w-auto landscape:max-w-sm space-y-6 border border-gray-300 p-6 rounded-md">
                 <Form method="post" >
                     <HoneypotInputs />
                     <h1 className="font-semibold text-3xl">Login</h1>
@@ -121,19 +121,20 @@ export default function Login() {
                     </fieldset>
                 </Form>
 
-                <div className="before:flex-1 before:h-0.5 before:mt-0.5 before:mr-3 before:bg-slate-200 flex justify-center items-center after:flex-1 after:h-0.5 after:bg-slate-200 after:mt-0.5 after:ml-3">
+                {/* <div className="before:flex-1 before:h-0.5 before:mt-0.5 before:mr-3 before:bg-slate-200 flex justify-center items-center after:flex-1 after:h-0.5 after:bg-slate-200 after:mt-0.5 after:ml-3">
                     <p className="">or</p>
-                </div>
+                </div> */}
 
-                <div className="flex justify-center border border-slate-300 rounded py-3">
+                {/* TODO: Google auth */}
+
+                {/* <div className="flex justify-center border border-slate-300 rounded py-3">
                     <div className="flex gap-2 items-center">
                         <div className="w-5 h-5 text-[#8e8f92]">
                             <GoogleIcon />
                         </div>
-                        {/* TODO: Google auth */}
                         Log in with Google
                     </div>
-                </div>
+                </div> */}
                 <div>
                     <Link
                         to="/signup"
