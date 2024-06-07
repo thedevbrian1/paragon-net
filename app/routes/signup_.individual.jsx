@@ -70,6 +70,27 @@ export async function action({ request, response }) {
     const page = Number(new URL(request.url).searchParams.get('page') ?? '1');
     const nextPage = Number(page) + (action === 'next' ? 1 : -1);
 
+    if (action === 'dummy') {
+        console.log('Dummy!!');
+        const { data: signupUser, error: signupError } = await supabaseClient.auth.signUp({
+            email: 'thedevbrian@gmail.com',
+            password: 'Brev49ian1!',
+            // options: {
+            //     emailRedirectTo: getRedirectURL()
+            // }
+        });
+
+        if (signupError) {
+            throw new Error(signupError);
+        }
+        setSuccessMessage(session, 'Check your email to verify it.');
+        response.headers.append("Set-Cookie", await sessionStorage.commitSession(session));
+
+        return null;
+    }
+
+    return null;
+
     switch (page) {
         case 1: {
             const firstName = trimString(String(formData.get('firstName')));
@@ -292,6 +313,9 @@ export default function IndividualSignup() {
             <div className="order-1 md:order-2 flex-1 basis-0 w-full md:w-auto landscape:max-w-sm space-y-6 border border-gray-300 p-6 rounded-md">
                 <Form method="post" ref={formRef} preventScrollReset>
                     <HoneypotInputs />
+                    <button type="submit" name="_action" value="dummy" className="bg-red-500 p-4 text-white">
+                        {isSubmitting ? 'Processing...' : 'Sign up'}
+                    </button>
                     <h1 className="font-semibold text-3xl">Signup</h1>
                     <div className="mt-4">
                         {
