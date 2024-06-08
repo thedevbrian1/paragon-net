@@ -6,11 +6,7 @@ publish = "build/client"
 command = "npm run dev"
 framework = "vite"
 
-[[redirects]]
-  from = "/auth/confirm"
-  to = "/auth/confirm"
-  status = 200
-  force = true
+
 
 # Set immutable caching for static files, because they have fingerprinted filenames
 
