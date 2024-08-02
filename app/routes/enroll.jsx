@@ -366,6 +366,13 @@ export default function Enroll() {
                                             ref={mpesaRef}
                                         />
                                     </FormSpacer>
+                                    <button
+                                        type="submit"
+                                        name="_action"
+                                        value="next"
+                                        className="bg-brand-orange hover:bg-orange-400 focus:border-none focus:outline-none focus:ring-2 focus:ring-brand-black transition duration-300 ease-in-out text-black rounded capitalize px-4 py-2">
+                                        {isSubmitting ? 'Processing...' : 'Submit'}
+                                    </button>
                                 </fieldset>
                             </>
 
@@ -403,13 +410,14 @@ export default function Enroll() {
                             {isSubmitting ? 'Processing...' : 'Previous'}
                         </button>
                     )} */}
+                        {/* TODO: Show this buttonwhen the transaction was successful */}
                         {(Number(page) === 1) && (
                             <button
                                 type="submit"
                                 name="_action"
                                 value="next"
                                 className="bg-brand-orange hover:bg-orange-400 focus:border-none focus:outline-none focus:ring-2 focus:ring-brand-black transition duration-300 ease-in-out text-black rounded capitalize px-4 py-2">
-                                {isSubmitting ? 'Processing...' : 'Submit'}
+                                {isSubmitting ? 'Processing...' : 'Next'}
                             </button>
                         )}
                         {/* {(Number(page) === 4) && (
